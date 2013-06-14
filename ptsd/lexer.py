@@ -46,7 +46,7 @@ class Lexer(object):
 
   def t_LITERAL(self, t):
     r'\"([^\\\n]|(\\.))*?\"'
-    t.value = Literal(t.value)
+    t.value = Literal(t.value[1:-1])  # strip off ""s
     return t
 
   def t_HEXCONSTANT(self, t):

@@ -3,14 +3,13 @@
 import code
 import sys
 import time
-import pprint
 
-from ptsd.parser import Parser
+from ptsd.loader import Loader
 
 
-with open(sys.argv[1]) as fp:
-  start = time.time()
-  ast = Parser().parse(fp.read())
-  print('took %.1fms' % (1000 * (time.time() - start)))
-  if len(sys.argv) > 2:
-    code.interact(local={'ast': ast})
+start = time.time()
+loader = Loader(sys.argv[1])
+print('took %.1fms' % (1000 * (time.time() - start)))
+
+if len(sys.argv) > 2:
+  code.interact(local={'loader': loader})

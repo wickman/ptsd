@@ -64,7 +64,7 @@ class Include(Node):
     super(Include, self).__init__(parser)
 
 
-class Annotated(Node):
+class Annotated(object):
   def __init__(self):
     self.annotations = []
     super(Annotated, self).__init__()
@@ -76,80 +76,80 @@ class Annotated(Node):
 class Typedef(Node, Annotated):
   def __init__(self, parser):
     '''typedef : TYPEDEF field_type IDENTIFIER type_annotations'''
+    super(Typedef, self).__init__(parser)
     self.type = parser[2]
     self.name = Identifier(parser, 3)
-    self.annotations.add_annotations(parser[4])
-    super(Typedef, self).__init__(parser)
+    self.add_annotations(parser[4])
 
 
 class Enum(Node, Annotated):
   def __init__(self, parser):
     '''enum : ENUM IDENTIFIER '{' enum_def_list '}' type_annotations'''
+    super(Enum, self).__init__(parser)
     self.name = Identifier(parser, 2)
     self.values = parser[4]
-    self.annotations.add_annotations(parser[6])
-    super(Enum, self).__init__(parser)
+    self.add_annotations(parser[6])
 
 
 class EnumDef(Node, Annotated):
   def __init__(self, parser):
     '''enum_def : IDENTIFIER '=' INTCONSTANT type_annotations comma_or_semicolon_optional
                 | IDENTIFIER type_annotations comma_or_semicolon_optional'''
+    super(EnumDef, self).__init__(parser)
     self.name = Identifier(parser, 1)
     if parser[2] == '=':
       self.tag = parser[3]
-      self.annotations.add_annotations(parser[4])
+      self.add_annotations(parser[4])
     else:
-      self.annotations.add_annotations(parser[2])
-    super(EnumDef, self).__init__(parser)
+      self.add_annotations(parser[2])
 
 
 class Senum(Node, Annotated):
   def __init__(self, parser):
     '''senum : SENUM IDENTIFIER '{' senum_def_list '}' type_annotations'''
+    super(Senum, self).__init__(parser)
     self.name = Identifier(parser, 2)
     self.values = parser[4]
-    self.annotations.add_annotations(parser[6])
-    super(Senum, self).__init__(parser)
+    self.add_annotations(parser[6])
 
 
 class Const(Node):
   def __init__(self, parser):
     '''const : CONST field_type IDENTIFIER '=' const_value comma_or_semicolon_optional'''
+    super(Const, self).__init__(parser)
     self.type = parser[2]
     self.name = Identifier(parser, 3)
     self.value = parser[5]
-    super(Const, self).__init__(parser)
 
 
 class Struct(Node, Annotated):
   def __init__(self, parser):
     '''struct : struct_head IDENTIFIER xsd_all '{' field_list '}' type_annotations'''
+    super(Struct, self).__init__(parser)
     self.union = parser[1] == 'union'
     self.name = Identifier(parser, 2)
     self.xsd_all = parser[3]
     self.fields = parser[5]
-    self.annotations.add_annotations(parser[7])
-    super(Struct, self).__init__(parser)
+    self.add_annotations(parser[7])
 
 
 class Exception_(Node, Annotated):
   def __init__(self, parser):
     '''exception : EXCEPTION IDENTIFIER '{' field_list '}' type_annotations'''
+    super(Exception_, self).__init__(parser)
     self.name = Identifier(parser, 2)
     self.fields = parser[4]
-    self.annotations.add_annotations(parser[6])
-    super(Exception_, self).__init__(parser)
+    self.add_annotations(parser[6])
 
 
 class Service(Node, Annotated):
   def __init__(self, parser):
     '''service : SERVICE IDENTIFIER extends '{' flag_args function_list unflag_args '}' type_annotations'''
+    super(Service, self).__init__(parser)
     self.name = Identifier(parser, 2)
     self.extends = parser[3]
     self.functions = parser[6]
-    self.annotations.add_annotations(parser[9])
-    super(Service, self).__init__(parser)
+    self.add_annotations(parser[9])
 
 
 class Function(Node, Annotated):
@@ -163,19 +163,20 @@ class Function(Node, Annotated):
                   throws
                   type_annotations
                   comma_or_semicolon_optional'''
+    super(Function, self).__init__(parser)
     self.oneway = parser[1]
     self.type = parser[2]
     self.name = Identifier(parser, 3)
     self.arguments = parser[5]
     self.throws = parser[7]
-    self.annotations.add_annotations(parser[8])
-    super(Function, self).__init__(parser)
+    self.add_annotations(parser[8])
 
 
 class Field(Node, Annotated):
   def __init__(self, parser):
     '''field : field_identifier field_requiredness field_type IDENTIFIER field_value xsd_optional
                xsd_nillable xsd_attributes type_annotations comma_or_semicolon_optional'''
+    super(Field, self).__init__(parser)
     self.identifier = parser[1]
     self.required = parser[2]
     self.type = parser[3]
@@ -183,16 +184,15 @@ class Field(Node, Annotated):
     self.xsd_optional = parser[5]
     self.xsd_nillable = parser[6]
     self.xsd_attributes = parser[7]
-    self.annotations.add_annotations(parser[8])
-    super(Field, self).__init__(parser)
+    self.add_annotations(parser[8])
 
 
 class TypeAnnotation(Node):
   def __init__(self, parser):
     """type_annotation : IDENTIFIER '=' LITERAL comma_or_semicolon_optional"""
+    super(TypeAnnotation, self).__init__(parser)
     self.name = Identifier(parser, 1)
     self.value = parser[3]
-    super(TypeAnnotation, self).__init__(parser)
 
 
 # Base types
@@ -242,7 +242,7 @@ class Double(Node, Annotated):
 
 
 # Container types
-class Map(Node, Type):
+class Map(Node, Annotated):
   def __init__(self, parser):
     """MAP cpp_type '<' field_type ',' field_type '>'"""
     self.cpp_type = parser[2]
@@ -254,7 +254,7 @@ class Map(Node, Type):
     return 'map<%s,%s>' % (self.key_type, self.value_type)
 
 
-class Set(Node, Type):
+class Set(Node, Annotated):
   def __init__(self, parser):
     """SET cpp_type '<' field_type '>'"""
     self.cpp_type = parser[2]
@@ -265,7 +265,7 @@ class Set(Node, Type):
     return 'set<%s>' % (self.value_type)
 
 
-class List(Node, Type):
+class List(Node, Annotated):
   def __init__(self, parser):
     """LIST '<' field_type '>'"""
     self.value_type = parser[3]
