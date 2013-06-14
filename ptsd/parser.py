@@ -20,6 +20,7 @@ from .ast import (
     # Everything else
     Field,
     Function,
+    Identifier,
     Service,
     Exception_,
     Struct,
@@ -29,8 +30,8 @@ from .ast import (
     EnumDef,
     Typedef,
     Include,
-    LanguageDirective,
-    Program
+    Namespace,
+    Thrift
 )
 from .lexer import Lexer
 
@@ -41,7 +42,7 @@ class Parser(object):
   class Error(Exception): pass
 
   tokens = Lexer.tokens
-  start = 'program'
+  start = 'thrift'
 
   BASIC_TYPES = {
     'binary': Binary,
@@ -70,9 +71,9 @@ class Parser(object):
     '''empty : '''
     pass
 
-  def p_program(self, p):
-    '''program : header_list definition_list'''
-    p[0] = Program(p)
+  def p_thrift(self, p):
+    '''thrift : header_list definition_list'''
+    p[0] = Thrift(p)
 
   def p_header_list(self, p):
     '''header_list : header_list header
@@ -99,7 +100,7 @@ class Parser(object):
     if len(p) == 2:
       p[0] = p[1]
     else:
-      p[0] = LanguageDirective(p)
+      p[0] = Namespace(p)
 
   def p_include(self, p):
     '''include : INCLUDE LITERAL'''
@@ -163,7 +164,7 @@ class Parser(object):
 
   def p_const(self, p):
     '''const : CONST field_type IDENTIFIER '=' const_value comma_or_semicolon_optional'''
-    p[0] = Const(parser)
+    p[0] = Const(p)
 
   def p_const_value(self, p):
     '''const_value : INTCONSTANT

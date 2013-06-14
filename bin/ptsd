@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import code
 import sys
 import time
 import pprint
@@ -11,4 +12,5 @@ with open(sys.argv[1]) as fp:
   start = time.time()
   ast = Parser().parse(fp.read())
   print('took %.1fms' % (1000 * (time.time() - start)))
-  pprint.pprint(ast)
+  if len(sys.argv) > 2:
+    code.interact(local={'ast': ast})

@@ -3,26 +3,30 @@ from . import constants
 import ply.lex as lex
 
 
-__all__ = ('Lexer,')
+__all__ = ('Lexer', 'Literal', 'Identifier',)
+
+
+class Literal(object):
+  def __init__(self, value):
+    self.value = value
+
+
+class Identifier(object):
+  def __init__(self, value):
+    self.value = value
 
 
 class Lexer(object):
   class Error(Exception): pass
 
-  RESERVED = constants.BOOL + constants.NAMESPACES + constants.TYPES + constants.ACTIONS
+  RESERVED = constants.NAMESPACES + constants.TYPES + constants.ACTIONS
   RESERVED_DISALLOW = constants.DISALLOW
 
-  literals = [':', ';', ',', '{', '}', '(', ')', '=', '<', '>', '[', ']']
+  literals = [':', ';', ',', '{', '}', '(', ')', '=', '<', '>', '[', ']', '*']
   tokens = (
       'DUBCONSTANT',
       'INTCONSTANT',
-      'HEXCONSTANT',
       'IDENTIFIER',
-      'SILLYCOMM',
-      'MULTICOMM',
-      'DOCTEXT',
-      'COMMENT',
-      'UNIXCOMMENT',
       'ST_IDENTIFIER',
       'LITERAL'
   ) + tuple(rsv.upper() for rsv in RESERVED)
@@ -35,15 +39,20 @@ class Lexer(object):
   t_ignore_UNIXCOMMENT = r'\#[^\n]*'
 
   t_ST_IDENTIFIER = r'[a-zA-Z-](\.[a-zA-Z_0-9-]|[a-zA-Z_0-9-])*'
-  t_LITERAL = r'\"([^\\\n]|(\\.))*?\"'
 
   def t_newline(self, t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+  def t_LITERAL(self, t):
+    r'\"([^\\\n]|(\\.))*?\"'
+    t.value = Literal(t.value)
+    return t
+
   def t_HEXCONSTANT(self, t):
     r'"0x"[0-9A-Fa-f]+'
     t.value = int(t.value, 16)
+    t.type = 'INTCONSTANT'
     return t
 
   def t_DUBCONSTANT(self, t):
@@ -62,8 +71,11 @@ class Lexer(object):
       t.type = t.value.upper()
     elif t.value in self.RESERVED_DISALLOW:
       raise self.Error('Found invalid reserved word: %s' % t.value)
+    elif t.value in constants.BOOL:
+      t.value = 1 if t.value == "true" else 0
+      t.type = 'INTCONSTANT'
     else:
-      t.type = 'IDENTIFIER'
+      t.value = Identifier(t.value)
     return t
 
   def t_error(self, t):
