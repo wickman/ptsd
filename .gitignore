@@ -1,0 +1,9 @@
+*~
+*.pyc
+*.egg-info
+build/*
+dist/*
+.virtualenv*
+.coverage
+htmlcov
+TODO
