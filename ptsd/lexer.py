@@ -27,7 +27,7 @@ class Lexer(object):
       'LITERAL'
   ) + tuple(rsv.upper() for rsv in RESERVED)
 
-  t_ignore = ' \t\r\n'
+  t_ignore = ' \t\r'
   t_ignore_SILLYCOMM = r'\/\*\**\*\/'
   t_ignore_MULTICOMM = r'\/\*[^*]\/*([^*/]|[^*]\/|\*[^/])*\**\*\/'
   t_ignore_DOCTEXT = r'\/\*\*([^*/]|[^*]\/|\*[^/])*\**\*\/'
@@ -36,6 +36,10 @@ class Lexer(object):
 
   t_ST_IDENTIFIER = r'[a-zA-Z-](\.[a-zA-Z_0-9-]|[a-zA-Z_0-9-])*'
   t_LITERAL = r'\"([^\\\n]|(\\.))*?\"'
+
+  def t_newline(self, t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
   def t_HEXCONSTANT(self, t):
     r'"0x"[0-9A-Fa-f]+'
