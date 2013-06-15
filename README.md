@@ -19,8 +19,7 @@ file and all its includes and prints out the reformatted ast in parseable
 thrift:
 
 ```console
-mba=; PYTHONPATH=.deps/ply-3.4-py2.6.egg:. bin/ptsd
-testdata/thrift_test.thrift
+mba=; PYTHONPATH=.deps/ply-3.4-py2.6.egg:. bin/ptsd testdata/thrift_test.thrift
 Processing /Users/wickman/clients/ptsd/testdata/thrift_test.thrift
 Dumping /Users/wickman/clients/ptsd/testdata/thrift_test.thrift
 
