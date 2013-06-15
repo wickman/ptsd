@@ -384,7 +384,7 @@ class Parser(object):
 
   def __init__(self):
     self._lex = Lexer().build()
-    self._yacc = yacc.yacc(module=self)
+    self._yacc = yacc.yacc(module=self, write_tables=False, debug=False)
 
   def parse(self, data):
     return self._yacc.parse(data, lexer=self._lex, tracking=True)
