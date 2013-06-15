@@ -1,4 +1,4 @@
-## ptsd is a pure python thrift parser built using ply (python lex-yacc) ##
+## ptsd is a pure python thrift parser built using PLY ##
 
 to use, just pip install into a virtualenv or reference the eggs a la carte.
 
@@ -6,10 +6,41 @@ to use, just pip install into a virtualenv or reference the eggs a la carte.
 #### using ####
 to access the thrift ast:
 ```python
-from ptsd.parser import Parser
+>>> from ptsd.parser import Parser
+>>> with open('testdata/thrift_test.thrift') as fp:
+...   tree = Parser().parse(fp.read())
+...
+>>> tree.includes
+[]
+>>> tree.namespaces
+[<ptsd.ast.Namespace object at 0x1006e4f10>, <ptsd.ast.Namespace object at 0x1006e4cd0>, <ptsd.ast.Namespace object at 0x1006e4d90>,
+<ptsd.ast.Namespace object at 0x1006e5650>, <ptsd.ast.Namespace object at 0x1006dd490>, <ptsd.ast.Namespace object at 0x1006dda90>,
+<ptsd.ast.Namespace object at 0x1006e5910>, <ptsd.ast.Namespace object at 0x1006e5850>, <ptsd.ast.Namespace object at 0x1006e5b10>,
+<ptsd.ast.Namespace object at 0x1006e5510>, <ptsd.ast.Namespace object at 0x1006d9d10>, <ptsd.ast.Namespace object at 0x1006d9e50>,
+<ptsd.ast.Namespace object at 0x1006e2ed0>, <ptsd.ast.Namespace object at 0x1006d9d50>, <ptsd.ast.Namespace object at 0x1006d9c90>,
+<ptsd.ast.Namespace object at 0x1006d9e90>, <ptsd.ast.Namespace object at 0x1006eeed0>]
+>>> tree.body
+[<ptsd.ast.Enum object at 0x10122d310>, <ptsd.ast.Const object at 0x10122d410>, <ptsd.ast.Typedef object at 0x1006eee90>,
+<ptsd.ast.Struct object at 0x10122d710>, <ptsd.ast.Struct object at 0x10122d910>, <ptsd.ast.Struct object at 0x10122dc90>,
+<ptsd.ast.Struct object at 0x10122df50>, <ptsd.ast.Struct object at 0x10122c310>, <ptsd.ast.Struct object at 0x10122c650>,
+<ptsd.ast.Struct object at 0x10122cb10>, <ptsd.ast.Exception_ object at 0x10122ce50>, <ptsd.ast.Exception_ object at 0x10122ce10>,
+<ptsd.ast.Struct object at 0x10122a150>, <ptsd.ast.Struct object at 0x10122a1d0>, <ptsd.ast.Service object at 0x10122bf90>,
+<ptsd.ast.Service object at 0x10122d590>, <ptsd.ast.Struct object at 0x10122efd0>, <ptsd.ast.Struct object at 0x101230a90>,
+<ptsd.ast.Struct object at 0x101230d10>, <ptsd.ast.Struct object at 0x101230f90>, <ptsd.ast.Struct object at 0x101231250>,
+<ptsd.ast.Struct object at 0x101231a90>, <ptsd.ast.Struct object at 0x101231b50>, <ptsd.ast.Struct object at 0x101231d10>,
+<ptsd.ast.Struct object at 0x1012330d0>, <ptsd.ast.Struct object at 0x101233590>, <ptsd.ast.Struct object at 0x101233610>,
+<ptsd.ast.Struct object at 0x101233710>, <ptsd.ast.Struct object at 0x101233a10>, <ptsd.ast.Struct object at 0x101233a50>]
+>>>
+```
 
-with open('foo.thrift') as fp:
-  ast = Parser().parse(fp.read())
+each ast object also has its line spans and character spans available:
+```python
+>>> tree.namespaces[0]._lexspan
+(958, 975)
+>>> tree.namespaces[0]._linespan
+(3, 3)
+>>> print(tree.namespaces[0])
+namespace c_glib TTest
 ```
 
 #### bin/ptsd ####
