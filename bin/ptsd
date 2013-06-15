@@ -9,6 +9,8 @@ from ptsd.loader import Loader
 
 start = time.time()
 loader = Loader(sys.argv[1])
+loader.dump()
+
 print('took %.1fms' % (1000 * (time.time() - start)))
 
 if len(sys.argv) > 2:

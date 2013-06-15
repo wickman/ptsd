@@ -33,7 +33,10 @@ from .ast import (
     Namespace,
     Thrift
 )
-from .lexer import Lexer
+from .lexer import (
+    Lexer,
+    Identifier as LexerIdentifier
+)
 
 import ply.yacc as yacc
 
@@ -66,6 +69,8 @@ class Parser(object):
   def default_list_action(cls, p):
     if len(p) == 3:
       p[0] = (p[1] if p[1] else []) + [p[2]]
+    else:
+      p[0] = []
 
   def p_empty(self, p):
     '''empty : '''
@@ -135,8 +140,12 @@ class Parser(object):
                                    | empty'''
     self.default_action(p)
 
+  def p_start_enum_counter(self, p):
+    '''start_enum_counter : empty'''
+    self._enum_counter = -1
+
   def p_enum(self, p):
-    '''enum : ENUM IDENTIFIER '{' enum_def_list '}' type_annotations'''
+    '''enum : ENUM IDENTIFIER start_enum_counter '{' enum_def_list '}' type_annotations'''
     p[0] = Enum(p)
 
   def p_enum_def_list(self, p):
@@ -147,7 +156,11 @@ class Parser(object):
   def p_enum_def(self, p):
     '''enum_def : IDENTIFIER '=' INTCONSTANT type_annotations comma_or_semicolon_optional
                 | IDENTIFIER type_annotations comma_or_semicolon_optional'''
-    p[0] = EnumDef(p)
+    if p[2] == '=':
+      self._enum_counter = p[3]
+    else:
+      self._enum_counter += 1
+    p[0] = EnumDef(p, self._enum_counter)
 
   def p_senum(self, p):
     '''senum : SENUM IDENTIFIER '{' senum_def_list '}' type_annotations'''
@@ -173,7 +186,8 @@ class Parser(object):
                    | IDENTIFIER
                    | const_list
                    | const_map'''
-    # XXX identifiers need to be wrapped in an identifier type
+    if isinstance(p[1], LexerIdentifier):
+      p[1] = Identifier(p, 1)
     p[0] = p[1]
 
   def p_const_list(self, p):
@@ -302,6 +316,8 @@ class Parser(object):
     '''field_type : IDENTIFIER
                   | base_type
                   | container_type'''
+    if isinstance(p[1], LexerIdentifier):
+      p[1] = Identifier(p, 1)
     p[0] = p[1]
 
   def p_base_type(self, p):
