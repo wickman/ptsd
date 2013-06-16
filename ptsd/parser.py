@@ -208,7 +208,8 @@ class Parser(object):
   def p_const_map_contents(self, p):
     '''const_map_contents : const_map_contents const_value ':' const_value comma_or_semicolon_optional
                           | empty'''
-    # XXX(wickman) does this imply hashable lists/maps?
+    # TODO(wickman) if this implies hashable lists/maps we should probably store lists as tuples
+    # and maps as a tuple of tuples.
     p[0] = p[1] or {}
     if len(p) > 4:
       p[0][p[2]] = p[4]

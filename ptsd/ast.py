@@ -17,6 +17,15 @@ class Node(object):
     self._lexspan = parser.lexspan(offset)
     super(Node, self).__init__()
 
+  def _walk(self):
+    return []
+
+  def walk(self):
+    for child in self._walk():
+      yield (self, child)
+      for pair in child.walk():
+        yield pair
+
 
 class Identifier(Node):
   def __init__(self, parser, offset):
@@ -33,6 +42,9 @@ class Thrift(Node):
     self.includes = [k for k in parser[1] if isinstance(k, Include)]
     self.namespaces = [k for k in parser[1] if isinstance(k, Namespace)]
     self.body = parser[2]
+
+  def _walk(self):
+    return itertools.chain(self.includes, self.namespaces, self.body)
 
   def __str__(self):
     return '%s%s%s%s%s' % (
@@ -122,6 +134,9 @@ class Enum(Node, Annotated):
     self.values = parser[5]
     self.add_annotations(parser[7])
 
+  def _walk(self):
+    return itertools.chain(self.values, self.annotations)
+
   def __str__(self):
     return untab('enum %s {\n\t%s\n}%s' % (
         self.name,
@@ -185,13 +200,15 @@ class Struct(Node, Annotated):
     self.fields = parser[5]
     self.add_annotations(parser[7])
 
+  def _walk(self):
+    return itertools.chain(self.fields, self.annotations)
+
   def __str__(self):
     return untab('%s %s {\n\t%s\n}%s' % (
         'union' if self.union else 'struct',
         self.name,
         '\n\t'.join(map(str, self.fields)),
         self.annotations_str()))
-
 
 
 class Exception_(Node, Annotated):
@@ -201,6 +218,9 @@ class Exception_(Node, Annotated):
     self.name = Identifier(parser, 2)
     self.fields = parser[4]
     self.add_annotations(parser[6])
+
+  def _walk(self):
+    return itertools.chain(self.fields, self.annotations)
 
   def __str__(self):
     return untab('exception %s {\n\t%s\n}%s' % (
@@ -218,12 +238,16 @@ class Service(Node, Annotated):
     self.functions = parser[6]
     self.add_annotations(parser[9])
 
+  def _walk(self):
+    return itertools.chain(self.functions, self.annotations)
+
   def __str__(self):
     return untab('service %s%s {\n\t%s\n}%s' % (
         self.name,
         ' extends %s' % self.extends if self.extends else '',
         '\n\t'.join(map(str, self.functions)),
         self.annotations_str()))
+
 
 class Function(Node, Annotated):
   def __init__(self, parser):
@@ -243,6 +267,9 @@ class Function(Node, Annotated):
     self.arguments = parser[5]
     self.throws = parser[7]
     self.add_annotations(parser[8])
+
+  def _walk(self):
+    return itertools.chain(self.arguments, self.annotations)
 
   def __str__(self):
     return '%s%s %s(%s)%s%s' % (
@@ -267,6 +294,9 @@ class Field(Node, Annotated):
     self.xsd_nillable = parser[6]
     self.xsd_attributes = parser[7]
     self.add_annotations(parser[8])
+
+  def _walk(self):
+    return self.annotations
 
   def __str__(self):
     return '%d: %s%s %s%s' % (
