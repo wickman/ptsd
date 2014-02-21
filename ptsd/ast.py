@@ -290,20 +290,22 @@ class Field(Node, Annotated):
     self.required = parser[2]
     self.type = parser[3]
     self.name = Identifier(parser, 4)
-    self.xsd_optional = parser[5]
-    self.xsd_nillable = parser[6]
-    self.xsd_attributes = parser[7]
-    self.add_annotations(parser[8])
+    self.const_value = parser[5]
+    self.xsd_optional = parser[6]
+    self.xsd_nillable = parser[7]
+    self.xsd_attributes = parser[8]
+    self.add_annotations(parser[9])
 
   def _walk(self):
     return self.annotations
 
   def __str__(self):
-    return '%d: %s%s %s%s' % (
+    return '%d: %s%s %s%s%s' % (
         self.tag,
         'required ' if self.required else '',
         self.type,
         self.name,
+        ' = %s ' % Const.render_value(self.const_value) if self.const_value else '',
         self.annotations_str())
 
 
