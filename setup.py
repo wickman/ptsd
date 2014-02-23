@@ -11,7 +11,6 @@ setup(
   author               = 'Brian Wickman',
   author_email         = 'wickman@gmail.com',
   packages             = find_packages(),
-  py_modules           = ['ptsd'],
   zip_safe             = True,
   install_requires     = ['ply'],
   scripts              = ['bin/ptsd'],
