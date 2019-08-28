@@ -48,7 +48,7 @@ class Lexer(object):
     t.lexer.lineno += len(t.value)
 
   def t_LITERAL(self, t):
-    r'\"([^\\\n]|(\\.))*?\"'
+    r'[\"\']([^\\\n]|(\\.))*?[\"\']'
     t.value = Literal(t.value[1:-1])  # strip off ""s
     return t
 
