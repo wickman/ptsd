@@ -64,8 +64,16 @@ class Lexer(object):
     return t
 
   def t_INTCONSTANT(self, t):
-    r'[+-]?[0-9]+'
-    t.value = int(t.value)
+    r'[+-]?[1-9][0-9]*|0[xX][0-9a-fA-f]+|0[1-9]+'
+    try:
+      if t.value.startswith('0'):
+          t.value = int(t.value, base=8)
+      elif t.value.startswith('0x') or t.value.startswith('0X'):
+          t.value = int(t.value, base=16)
+      else:
+          t.value = int(t.value)
+    except ValueError:
+      t.value = 0
     return t
 
   def t_IDENTIFIER(self, t):
