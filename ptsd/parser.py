@@ -12,6 +12,7 @@ from .ast import (
     Slist,
     Bool,
     Byte,
+    I8,
     I16,
     I32,
     I64,
@@ -52,6 +53,7 @@ class Parser(object):
     'bool': Bool,
     'byte': Byte,
     'double': Double,
+    'i8': I8,
     'i16': I16,
     'i32': I32,
     'i64': I64,
@@ -332,6 +334,7 @@ class Parser(object):
                         | SLIST
                         | BOOL
                         | BYTE
+                        | I8
                         | I16
                         | I32
                         | I64
