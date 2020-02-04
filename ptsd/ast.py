@@ -351,6 +351,11 @@ class Byte(Node, Annotated, BaseType):
     super(Byte, self).__init__(parser)
 
 
+class I8(Node, Annotated, BaseType):
+  def __init__(self, parser):
+    super(I8, self).__init__(parser)
+
+
 class I16(Node, Annotated, BaseType):
   def __init__(self, parser):
     super(I16, self).__init__(parser)
