@@ -262,7 +262,7 @@ class Parser(object):
   def p_extends(self, p):
     '''extends : EXTENDS IDENTIFIER
                | empty'''
-    p[0] = p[2] if p[1] else None
+    p[0] = Identifier(p, 2) if p[1] else None
 
   def p_function_list(self, p):
     '''function_list : function_list function
