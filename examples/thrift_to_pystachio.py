@@ -14,7 +14,7 @@ def transform_enum(enum):
 
 
 def transform_type(field_type):
-  if isinstance(field_type, (ast.Byte, ast.I16, ast.I32, ast.I64)):
+  if isinstance(field_type, (ast.Byte, ast.I8,ast.I16, ast.I32, ast.I64)):
     return 'Integer'
   elif isinstance(field_type, ast.Double):
     return 'Float'
